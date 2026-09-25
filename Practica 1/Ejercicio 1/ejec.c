@@ -30,17 +30,17 @@ int main(int argc, char *argv[]) {
                 if(pid==0){
                     switch (i){
                         case 0:
-                            printf("Soy el proceso X: mi pid es %d.Mi padre es %d. Mi abuelo es %d. Mi bisabuelo es %d", getpid() ,num_pid_B, num_pid_A, pid_ejec);
+                            printf("Soy el proceso X: mi pid es %d.Mi padre es %d. Mi abuelo es %d. Mi bisabuelo es %d\n", getpid() ,num_pid_B, num_pid_A, pid_ejec);
                             sleep(tiempo+ 3);
-                            printf("Soy X(%d) y muero", getpid());
+                            printf("Soy X(%d) y muero\n", getpid());
                         break;
                         case 1:
-                            printf("Soy el proceso Y: mi pid es %d.Mi padre es %d. Mi abuelo es %d. Mi bisabuelo es %d", getpid() ,num_pid_B, num_pid_A, pid_ejec);
+                            printf("Soy el proceso Y: mi pid es %d.Mi padre es %d. Mi abuelo es %d. Mi bisabuelo es %d\n", getpid() ,num_pid_B, num_pid_A, pid_ejec);
                             sleep(tiempo+ 2);
-                            printf("Soy Y(%d) y muero", getpid());
+                            printf("Soy Y(%d) y muero\n", getpid());
                         break;
                         case 2:
-                            printf("Soy el proceso Z: mi pid es %d.Mi padre es %d. Mi abuelo es %d. Mi bisabuelo es %d", getpid() ,num_pid_B, num_pid_A, pid_ejec);
+                            printf("Soy el proceso Z: mi pid es %d.Mi padre es %d. Mi abuelo es %d. Mi bisabuelo es %d\n", getpid() ,num_pid_B, num_pid_A, pid_ejec);
                             signal(SIGALRM, manejador_Z); 
                             alarm(tiempo); 
                             pause();     
