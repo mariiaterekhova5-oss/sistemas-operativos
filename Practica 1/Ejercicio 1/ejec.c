@@ -21,7 +21,9 @@ int main(int argc, char *argv[]) {
     if (pid_A ==0) {
         pid_t num_pid_A=getpid();
         printf("Soy el proceso A: mi pid es %d. Mi padre es %d\n", num_pid_A, pid_ejec);
+        signal(SIGUSR1, manejador_A);
         pid_t pid_B = fork();
+
         if(pid_B==0) {
             pid_t num_pid_B=getpid();
             printf("Soy el proceso B: mi pid es %d. Mi padre es %d. Mi abuelo es %d\n", num_pid_B, num_pid_A, pid_ejec);
