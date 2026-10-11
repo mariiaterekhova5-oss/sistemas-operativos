@@ -21,13 +21,8 @@ int main(int argc, char *argv[]) {
 
     
     long tamano_total = lseek(fd_original, 0, SEEK_END); 
-    
-    
     lseek(fd_original, 0, SEEK_SET);
-
-    
     int hijos = tamano_total / tamano_trozo;
-
     if (tamano_total % tamano_trozo != 0) {
         hijos++;
     }
@@ -48,24 +43,18 @@ int main(int argc, char *argv[]) {
             close(fd_tuberia[1]); 
             
             char nombre_destino[256];
-            
             strcpy(nombre_destino, nombre_archivo); 
             
             int len = strlen(nombre_destino); 
-            
-            
             nombre_destino[len] = '.'; 
             nombre_destino[len + 1] = 'h'; 
-            
             
             nombre_destino[len + 2] = (i / 10) + '0'; 
             nombre_destino[len + 3] = (i % 10) + '0'; 
              
-            
             nombre_destino[len + 4] = '\0';
             
             int fd_destino = creat(nombre_destino, 0666);
-            
             if (fd_destino < 0) {
                 perror("Error al crear el archivo de destino");
                 return 1;

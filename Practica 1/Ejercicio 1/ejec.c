@@ -31,12 +31,12 @@ int main(int argc, char *argv[]) {
                     switch (i){
                         case 0:
                             printf("Soy el proceso X: mi pid es %d.Mi padre es %d. Mi abuelo es %d. Mi bisabuelo es %d\n", getpid() ,num_pid_B, num_pid_A, pid_ejec);
-                            sleep(tiempo+ 3);
+                            alarm(tiempo+3);
                             printf("Soy X(%d) y muero\n", getpid());
                         break;
                         case 1:
                             printf("Soy el proceso Y: mi pid es %d.Mi padre es %d. Mi abuelo es %d. Mi bisabuelo es %d\n", getpid() ,num_pid_B, num_pid_A, pid_ejec);
-                            sleep(tiempo+ 2);
+                            alarm(tiempo+ 2);
                             printf("Soy Y(%d) y muero\n", getpid());
                         break;
                         case 2:
@@ -47,7 +47,7 @@ int main(int argc, char *argv[]) {
                             
                             kill(num_pid_A, SIGUSR1); 
                             
-                            sleep(1); 
+                            alarm(1); 
                             printf("Soy Z (%d) y muero\n", getpid());
                         break;
                     }
