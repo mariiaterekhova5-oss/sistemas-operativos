@@ -9,10 +9,9 @@
 #define PUERTO 9999
 #define TAM_BUFFER 1024
 
-
-int main(int argc, char *argv[]){
+//funcion que conecta el cliente con el servidor y devuelve el conector del socket
+int conectarServidor(char *ip_destino){
     int conector;
-    char *ip_destino= argv[1];
     struct sockaddr_in servidor;
 
     conector = socket(AF_INET, SOCK_STREAM, 0);
@@ -22,7 +21,11 @@ int main(int argc, char *argv[]){
     servidor.sin_addr.s_addr=inet_addr(ip_destino);
 
     connect(conector, (struct sockaddr *)&servidor, sizeof(servidor));
+    return conector;
+}
 
+//funcion que recibe el archivo del servidor y lo imprime en la pantalla
+void recibirArchivo(int conector){
     char buffer[TAM_BUFFER];
     int leidos;
 
@@ -30,9 +33,15 @@ int main(int argc, char *argv[]){
         write(1, buffer, leidos);
 
     }
+}
 
+//funcion principal del cliente 
+int main(int argc, char *argv[]){
+    char *ip_destino= argv[1];
+    
+    int conector=conectarServidor(ip_destino);
+    recibirArchivo(conector);
+    
     close(conector);
-
-
 
 }
