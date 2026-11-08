@@ -12,7 +12,7 @@ int iniciarServidor(int puerto){
 
     servidor.sin_family=AF_INET; //el socket comunica a traves de la red de internet
     servidor.sin_port=htons(puerto); // la puerta reservada 
-    servidor.sin_addr.s_addr=INADOR_ANY; // cualquier direccion de la maquina
+    servidor.sin_addr.s_addr=INADDR_ANY; // cualquier direccion de la maquina
 
     conector=socket(AF_INET, SOCK_STREAM,0);
 
@@ -28,7 +28,7 @@ void atenAtenderElCliente(int connector_cliente, char *nom_archivo){
     int leidos;
     char buffer[1024];
     while((leidos=read(aux_archivo, buffer,1024))>0){
-        write(conector_cliente, buffer, leidos);
+        write(connector_cliente, buffer, leidos);
     }
     close(aux_archivo);
     close(connector_cliente);
@@ -48,7 +48,7 @@ int main(int argc, char *argv[]) {
             atenAtenderElCliente(connector_cliente, nom_archivo);
         }
         if(pid>0){
-            close(conector_cliente);
+            close(connector_cliente);
         }
     }
     
