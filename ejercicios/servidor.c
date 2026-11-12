@@ -12,7 +12,7 @@
 #define PUERTO 9999
 #define TAM_BUFFER 1024
 
-// 1. NUEVA FUNCIÓN: Comprueba errores de forma compacta
+// Funcion que comprueba errores de forma compacta
 void manejo_errores(int variable, const char *mensaje) {
     if (variable < 0) {
         perror(mensaje);
@@ -20,12 +20,12 @@ void manejo_errores(int variable, const char *mensaje) {
     }
 }
 
-// 2. Manejador para recoger a los procesos hijos y evitar zombies
+//Funcion de manejador para recoger a los procesos hijos y evitar zombies
 void manejadorZombies(int senial) {
     wait(NULL);
 }
 
-// 3. Funciones de negocio (dependen de manejo_errores)
+//  Funcion que atiende a un cliente, enviandole el archivo solicitado
 void atenderElCliente(int connector_cliente, char *nom_archivo) {
     int aux_archivo = open(nom_archivo, O_RDONLY);
     manejo_errores(aux_archivo, "Error al abrir el archivo");
@@ -46,7 +46,7 @@ void atenderElCliente(int connector_cliente, char *nom_archivo) {
     exit(0);
 }
 
-// 4. Funciones de red (dependen de manejo_errores)
+// Funcion que inicia el servidor 
 int iniciarServidor(int puerto) {
     int conector;
     struct sockaddr_in servidor;
@@ -67,7 +67,7 @@ int iniciarServidor(int puerto) {
     return conector;
 }
 
-// 5. Bucle principal de conexiones
+// Funcion que gestiona las conexiones entrantes de clientes
 void gestionarConexiones(int conector) {
     signal(SIGCHLD, manejadorZombies);
 
@@ -75,7 +75,7 @@ void gestionarConexiones(int conector) {
         int connector_cliente = accept(conector, NULL, NULL);
         
         // Aquí NO usamos manejo_errores() porque si falla un cliente 
-        // no queremos hacer exit(1) y matar el servidor entero.
+        // no queremos hacer exit(1) y matar el servidor entero. //hay mencionarlo en la memoria
         if (connector_cliente < 0) {
             perror("Error en accept");
             continue;
@@ -98,7 +98,7 @@ void gestionarConexiones(int conector) {
     }
 }
 
-// 6. Función principal 
+// Función principal 
 int main() {
     int conector = iniciarServidor(PUERTO);
     gestionarConexiones(conector);

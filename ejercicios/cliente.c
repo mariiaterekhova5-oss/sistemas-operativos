@@ -5,43 +5,69 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <arpa/inet.h>
+#include <stdio.h> 
 
 #define PUERTO 9999
 #define TAM_BUFFER 1024
 
-//funcion que conecta el cliente con el servidor y devuelve el conector del socket
+// Función de errores 
+void manejo_errores(int variable, const char *mensaje) {
+    if (variable < 0) {
+        perror(mensaje);
+        exit(1);
+    }
+}
+
+// Función que conecta el cliente con el servidor y devuelve el conector del socket
 int conectarServidor(char *ip_destino){
     int conector;
     struct sockaddr_in servidor;
 
     conector = socket(AF_INET, SOCK_STREAM, 0);
+    manejo_errores(conector, "Error al crear el socket");
 
     servidor.sin_family=AF_INET;
     servidor.sin_port=htons(PUERTO);
     servidor.sin_addr.s_addr=inet_addr(ip_destino);
 
-    connect(conector, (struct sockaddr *)&servidor, sizeof(servidor));
+    if (servidor.sin_addr.s_addr == INADDR_NONE) {
+        printf("Error: La dirección IP '%s' no tiene un formato válido.\n", ip_destino);
+        close(conector);
+        exit(1);
+    }
+
+    int aux_connect = connect(conector, (struct sockaddr *)&servidor, sizeof(servidor));
+    manejo_errores(aux_connect, "Error al conectar (¿Está el servidor encendido?)");
+    
     return conector;
 }
 
-//funcion que recibe el archivo del servidor y lo imprime en la pantalla
+// Función que recibe el archivo del servidor y lo imprime en la pantalla
 void recibirArchivo(int conector){
     char buffer[TAM_BUFFER];
     int leidos;
 
     while((leidos=read(conector, buffer, TAM_BUFFER))>0){
-        write(1, buffer, leidos);
-
+        int escritos = write(1, buffer, leidos);
+        manejo_errores(escritos, "Error al escribir en la pantalla");
     }
+    
+    manejo_errores(leidos, "Error al leer datos del servidor");
 }
 
-//funcion principal del cliente 
+// Función principal del cliente 
 int main(int argc, char *argv[]){
-    char *ip_destino= argv[1];
+
+    if (argc != 2) {
+        printf("Uso correcto: %s <IP_del_Servidor>\n", argv[0]);
+        exit(1);
+    }
+
+    char *ip_destino = argv[1];
     
-    int conector=conectarServidor(ip_destino);
+    int conector = conectarServidor(ip_destino);
     recibirArchivo(conector);
     
     close(conector);
-
+    return 0; 
 }
