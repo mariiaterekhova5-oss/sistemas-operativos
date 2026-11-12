@@ -4,60 +4,104 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <stdlib.h>
+#include <signal.h>
+#include <stdio.h>
+#include <sys/wait.h>
 
 #define NOM_ARCHIVO "Google.html"
 #define PUERTO 9999
+#define TAM_BUFFER 1024
 
-// Función que inicializa el servidor y devuelve el conector del socket
-int iniciarServidor(int puerto) {
-    int conector;
-    struct sockaddr_in servidor;
-
-    conector = socket(AF_INET, SOCK_STREAM, 0);
-
-    servidor.sin_family = AF_INET; 
-    servidor.sin_port = htons(puerto); 
-    servidor.sin_addr.s_addr = INADDR_ANY; 
-
-    bind(conector, (struct sockaddr *)&servidor, sizeof(servidor));
-    listen(conector, 5); 
-
-    return conector;
+// 1. NUEVA FUNCIÓN: Comprueba errores de forma compacta
+void manejo_errores(int variable, const char *mensaje) {
+    if (variable < 0) {
+        perror(mensaje);
+        exit(1);
+    }
 }
 
-// Función que atiende al cliente y le envia el archivo solicitado
+// 2. Manejador para recoger a los procesos hijos y evitar zombies
+void manejadorZombies(int senial) {
+    wait(NULL);
+}
+
+// 3. Funciones de negocio (dependen de manejo_errores)
 void atenderElCliente(int connector_cliente, char *nom_archivo) {
     int aux_archivo = open(nom_archivo, O_RDONLY);
+    manejo_errores(aux_archivo, "Error al abrir el archivo");
+
     int leidos;
-    char buffer[1024];
+    char buffer[TAM_BUFFER];
     
-    while((leidos = read(aux_archivo, buffer, 1024)) > 0) {
-        write(connector_cliente, buffer, leidos);
+    while ((leidos = read(aux_archivo, buffer, TAM_BUFFER)) > 0) {
+        int escritos = write(connector_cliente, buffer, leidos);
+        manejo_errores(escritos, "Error al enviar al cliente");
     }
+    
+    // Si read devuelve -1, también saltará un error
+    manejo_errores(leidos, "Error al leer el archivo");
     
     close(aux_archivo);
     close(connector_cliente);
     exit(0);
 }
 
-// Función principal del servidor 
-int main() {
-    int conector = iniciarServidor(PUERTO);
-    
-    while(1) {
+// 4. Funciones de red (dependen de manejo_errores)
+int iniciarServidor(int puerto) {
+    int conector;
+    struct sockaddr_in servidor;
+
+    conector = socket(AF_INET, SOCK_STREAM, 0);
+    manejo_errores(conector, "Error al crear el socket");
+
+    servidor.sin_family = AF_INET; 
+    servidor.sin_port = htons(puerto); 
+    servidor.sin_addr.s_addr = INADDR_ANY; 
+
+    int aux1 = bind(conector, (struct sockaddr *)&servidor, sizeof(servidor));
+    manejo_errores(aux1, "Error en bind");
+
+    int aux2 = listen(conector, 5);
+    manejo_errores(aux2, "Error en listen");
+
+    return conector;
+}
+
+// 5. Bucle principal de conexiones
+void gestionarConexiones(int conector) {
+    signal(SIGCHLD, manejadorZombies);
+
+    while (1) {
         int connector_cliente = accept(conector, NULL, NULL);
+        
+        // Aquí NO usamos manejo_errores() porque si falla un cliente 
+        // no queremos hacer exit(1) y matar el servidor entero.
+        if (connector_cliente < 0) {
+            perror("Error en accept");
+            continue;
+        }
         
         pid_t pid = fork();
         
-        if(pid == 0) {
+        if (pid < 0) {
+            perror("Error en fork");
+            close(connector_cliente);
+            continue;
+        } 
+        else if (pid == 0) {
             close(conector);
-            
             atenderElCliente(connector_cliente, NOM_ARCHIVO);
-        }
-        if(pid > 0) {
+        } 
+        else if (pid > 0) {
             close(connector_cliente);
         }
     }
-    
+}
+
+// 6. Función principal 
+int main() {
+    int conector = iniciarServidor(PUERTO);
+    gestionarConexiones(conector);
+    close(conector);
     return 0;
 }
