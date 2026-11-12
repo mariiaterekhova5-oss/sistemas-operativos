@@ -55,7 +55,7 @@ void productor(){
 		changecolor(ID_DE_PROD, BLUE);
 		changecolor(ID_DE_CONS, YELLOW);
 
-		contProductor = (contProd + 1) % SIZE_BUFFER;
+		contProd = (contProd + 1) % SIZE_BUFFER;
 		
 		signal(mutex);
 		signal(llenos);
@@ -73,10 +73,10 @@ void consumidor(){
 
 		changecolor(contCons + 1, WHITE);
 
-		changecolor(ID_PROD, YELLOW);
-		changecolor(ID_CONS, MAGENTA);
+		changecolor(ID_DE_PROD, YELLOW);
+		changecolor(ID_DE_CONS, MAGENTA);
 
-		contConsumidor=(contCons + 1) % SIZE_BUFFER;
+		contCons=(contCons + 1) % SIZE_BUFFER;
 
 		signal(mutex);
 		signal(huecos);
