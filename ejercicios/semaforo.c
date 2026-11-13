@@ -24,12 +24,13 @@ int dato = 1;
 void inicializarGraficos(){
 	int i;
 	for(i = 0; i < SIZE_BUFFER; i++){
-		// Buffer vacío inicia en BLANCO
-		create(i + 1, RNDRECT, WHITE, 160, 40 + (i * 45), 70, 35);
+	
+		create(i + 1, RECTANGLE, WHITE, 160, 40 + (i * 45), 70, 35);
 	}
-	// Productor y consumidor inician INACTIVOS en NEGRO
-	create(ID_DE_PROD, TRIANGLE, BLACK, 60, 45, 50, 40);
-	create(ID_DE_CONS, CIRCLE, BLACK, 280, 45, 45, 45);
+
+	create(ID_DE_PROD, CIRCLE, BLACK, 60, 45, 45, 45);
+
+	create(ID_DE_CONS, RNDRECT, BLACK, 280, 45, 50, 40);
 }
 
 void espera(int ms){
