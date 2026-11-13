@@ -59,7 +59,7 @@ void recibirArchivo(int conector){
 int main(int argc, char *argv[]){
 
     if (argc != 2) {
-        printf("Uso correcto: %s <IP_del_Servidor>\n", argv[0]);
+        printf("Uso correcto\n");
         exit(1);
     }
 
@@ -70,4 +70,5 @@ int main(int argc, char *argv[]){
     
     close(conector);
     return 0; 
+   
 }
