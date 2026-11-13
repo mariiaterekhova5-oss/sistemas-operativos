@@ -5,7 +5,7 @@ const int MAGENTA = 6; int WHITE = 7;
 const int CIRCLE = 1; int LINE = 2; int RECTANGLE = 3; int TRIANGLE = 4; int RNDRECT = 6;
 
 const int ID_DE_PROD = 20; int ID_DE_CONS = 30;
-const int TIEMPO_DE_ESPERA = 15;
+const int TIEMPO_DE_ESPERA = 5;
 
 semaphore mutex = 1;
 semaphore huecos = SIZE_BUFFER;
