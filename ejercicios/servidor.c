@@ -4,9 +4,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <stdlib.h>
-#include <signal.h>
 #include <stdio.h>
-#include <sys/wait.h>
 
 #define NOM_ARCHIVO "Google.html"
 #define PUERTO 9999
@@ -18,11 +16,6 @@ void manejo_errores(int variable, const char *mensaje) {
         perror(mensaje);
         exit(1);
     }
-}
-
-//Funcion de manejador para recoger a los procesos hijos 
-void manejadorControl(int senial) {
-    wait(NULL);
 }
 
 //  Funcion que atiende a un cliente, enviandole el archivo solicitado
@@ -38,7 +31,7 @@ void atenderElCliente(int connector_cliente, char *nom_archivo) {
         manejo_errores(escritos, "Error al enviar al cliente");
     }
     
-    // Si read devuelve -1, también saltará un error
+   
     manejo_errores(leidos, "Error al leer el archivo");
     
     close(aux_archivo);
@@ -69,13 +62,9 @@ int iniciarServidor(int puerto) {
 
 // Funcion que gestiona las conexiones entrantes de clientes
 void gestionarConexiones(int conector) {
-    signal(SIGCHLD, manejadorControl);
-
     while (1) {
         int connector_cliente = accept(conector, NULL, NULL);
-        
-        // Aquí NO usamos manejo_errores() porque si falla un cliente 
-        // no queremos hacer exit(1) y matar el servidor entero. //hay mencionarlo en la memoria
+
         if (connector_cliente < 0) {
             perror("Error en accept");
             continue;
@@ -94,6 +83,7 @@ void gestionarConexiones(int conector) {
         } 
         else if (pid > 0) {
             close(connector_cliente);
+            
         }
     }
 }
