@@ -10,10 +10,27 @@
 #define PUERTO 9999
 #define TAM_BUFFER 1024
 
-// Función de errores 
+// Función que comprueba errores de llamadas al sistema
 void manejo_errores(int variable, const char *mensaje) {
     if (variable < 0) {
         perror(mensaje);
+        exit(1);
+    }
+}
+
+// Función auxiliar: Valida que el usuario introduzca la IP al ejecutar
+void validarArgumentos(int argc) {
+    if (argc != 2) {
+        printf("Uso correcto: Cliente IP_Servidor\n");
+        exit(1);
+    }
+}
+
+// Función auxiliar: Valida que el formato de la IP tenga sentido usando struct sockaddr_in
+void validarFormatoIP(struct sockaddr_in servidor, int conector) {
+    if (servidor.sin_addr.s_addr == INADDR_NONE) {
+        printf("Error: La dirección IP \n");
+        close(conector);
         exit(1);
     }
 }
@@ -26,15 +43,12 @@ int conectarServidor(char *ip_destino){
     conector = socket(AF_INET, SOCK_STREAM, 0);
     manejo_errores(conector, "Error al crear el socket");
 
-    servidor.sin_family=AF_INET;
-    servidor.sin_port=htons(PUERTO);
-    servidor.sin_addr.s_addr=inet_addr(ip_destino);
+    servidor.sin_family = AF_INET;
+    servidor.sin_port = htons(PUERTO);
+    servidor.sin_addr.s_addr = inet_addr(ip_destino);
 
-    if (servidor.sin_addr.s_addr == INADDR_NONE) {
-        printf("Error: La dirección IP '%s' no tiene un formato válido.\n", ip_destino);
-        close(conector);
-        exit(1);
-    }
+    // Le pasamos la estructura entera, que sí está en vuestro temario
+    validarFormatoIP(servidor, conector);
 
     int aux_connect = connect(conector, (struct sockaddr *)&servidor, sizeof(servidor));
     manejo_errores(aux_connect, "Error al conectar (¿Está el servidor encendido?)");
@@ -57,11 +71,7 @@ void recibirArchivo(int conector){
 
 // Función principal del cliente 
 int main(int argc, char *argv[]){
-
-    if (argc != 2) {
-        printf("Uso correcto\n");
-        exit(1);
-    }
+    validarArgumentos(argc);
 
     char *ip_destino = argv[1];
     
@@ -70,5 +80,4 @@ int main(int argc, char *argv[]){
     
     close(conector);
     return 0; 
-   
 }
