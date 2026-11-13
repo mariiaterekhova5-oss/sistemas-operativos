@@ -47,7 +47,7 @@ int conectarServidor(char *ip_destino){
     servidor.sin_port = htons(PUERTO);
     servidor.sin_addr.s_addr = inet_addr(ip_destino);
 
-    // Le pasamos la estructura entera, que sí está en vuestro temario
+
     validarFormatoIP(servidor, conector);
 
     int aux_connect = connect(conector, (struct sockaddr *)&servidor, sizeof(servidor));
