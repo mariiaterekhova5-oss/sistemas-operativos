@@ -47,19 +47,19 @@ void productor(){
 	for (i = 0; i < 15; i++){
 		espera(TIEMPO_DE_ESPERA);
 
-		// 1. Estado BLOQUEADO/ESPERANDO: Se pone AMARILLO antes de pedir semáforos
+		
 		changecolor(ID_DE_PROD, YELLOW);
 
 		wait(huecos);
 		wait(mutex);
 		
-		// 2. Estado SECCIÓN CRÍTICA: Consigue el mutex y se pone AZUL
+		
 		changecolor(ID_DE_PROD, BLUE);
 
 		buffer[contProd] = dato;
 		dato = dato + 1;
 
-		// Llena el hueco del buffer (VERDE)
+		
 		changecolor(contProd + 1, GREEN);
 
 		contProd = (contProd + 1) % SIZE_BUFFER;
@@ -67,7 +67,7 @@ void productor(){
 		signal(mutex);
 		signal(llenos);
 
-		// 3. Estado INACTIVO: Sale de la sección crítica y vuelve a NEGRO
+		
 		changecolor(ID_DE_PROD, BLACK);
 	}
 }
@@ -76,18 +76,18 @@ void consumidor(){
 	int i;
 	int dato_sacado;
 	for (i = 0; i < 15; i++){
-		// 1. Estado BLOQUEADO/ESPERANDO: Se pone AMARILLO antes de pedir semáforos
+		
 		changecolor(ID_DE_CONS, YELLOW);
 
 		wait(llenos);
 		wait(mutex);
 
-		// 2. Estado SECCIÓN CRÍTICA: Consigue el mutex y se pone ROJO
+		
 		changecolor(ID_DE_CONS, RED);
 
 		dato_sacado=buffer[contCons];
 
-		// Vacía el hueco del buffer (BLANCO)
+		
 		changecolor(contCons + 1, WHITE);
 
 		contCons=(contCons + 1) % SIZE_BUFFER;
@@ -95,7 +95,7 @@ void consumidor(){
 		signal(mutex);
 		signal(huecos);
 
-		// 3. Estado INACTIVO: Sale de la sección crítica y vuelve a NEGRO
+		
 		changecolor(ID_DE_CONS, BLACK);
 
 		espera(TIEMPO_DE_ESPERA);

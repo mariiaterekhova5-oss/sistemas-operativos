@@ -20,8 +20,8 @@ void manejo_errores(int variable, const char *mensaje) {
     }
 }
 
-//Funcion de manejador para recoger a los procesos hijos y evitar zombies
-void manejadorZombies(int senial) {
+//Funcion de manejador para recoger a los procesos hijos 
+void manejadorControl(int senial) {
     wait(NULL);
 }
 
@@ -69,7 +69,7 @@ int iniciarServidor(int puerto) {
 
 // Funcion que gestiona las conexiones entrantes de clientes
 void gestionarConexiones(int conector) {
-    signal(SIGCHLD, manejadorZombies);
+    signal(SIGCHLD, manejadorControl);
 
     while (1) {
         int connector_cliente = accept(conector, NULL, NULL);
