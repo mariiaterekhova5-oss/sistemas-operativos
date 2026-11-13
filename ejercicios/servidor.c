@@ -31,12 +31,28 @@ void atenderElCliente(int connector_cliente, char *nom_archivo) {
         manejo_errores(escritos, "Error al enviar al cliente");
     }
     
-   
     manejo_errores(leidos, "Error al leer el archivo");
     
     close(aux_archivo);
     close(connector_cliente);
     exit(0);
+}
+
+// Funcion que delega la atencion de un cliente a un proceso hijo
+void delegarCliente(int conector_principal, int connector_cliente) {
+    pid_t pid = fork();
+    
+    if (pid < 0) {
+        perror("Error en fork");
+        close(connector_cliente);
+    } 
+    else if (pid == 0) {
+        close(conector_principal);
+        atenderElCliente(connector_cliente, NOM_ARCHIVO);
+    } 
+    else if (pid > 0) {
+        close(connector_cliente);
+    }
 }
 
 // Funcion que inicia el servidor 
@@ -67,23 +83,9 @@ void gestionarConexiones(int conector) {
 
         if (connector_cliente < 0) {
             perror("Error en accept");
-            continue;
-        }
-        
-        pid_t pid = fork();
-        
-        if (pid < 0) {
-            perror("Error en fork");
-            close(connector_cliente);
-            continue;
         } 
-        else if (pid == 0) {
-            close(conector);
-            atenderElCliente(connector_cliente, NOM_ARCHIVO);
-        } 
-        else if (pid > 0) {
-            close(connector_cliente);
-            
+        else {
+            delegarCliente(conector, connector_cliente);
         }
     }
 }
